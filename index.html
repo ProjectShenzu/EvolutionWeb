@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Evolution</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: monospace;
+    }
+    .login-box {
+      padding: 30px;
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 10px cyan;
+      text-align: center;
+      width: 300px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      background: #222;
+      border: none;
+      color: white;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px;
+      width: 100%;
+      border: none;
+      background: cyan;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .error-floating, .success-floating {
+      position: fixed;
+      top: 20px;
+      background: red;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: none;
+      color: white;
+      font-size: 14px;
+    }
+    .success-floating {
+      background: green;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username"/>
+  <input type="password" id="password" placeholder="Password"/>
+  <button onclick="login()">➤ LOGIN</button>
+</div>
+
+<div id="errorBox" class="error-floating"></div>
+<div id="successBox" class="success-floating"></div>
+
+<script>
+  async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const dbURL = "https://raw.githubusercontent.com/ProjectShenzu/DatabaseEvolution/refs/heads/main/databaseweb.json";
+
+    try {
+      const res = await fetch(dbURL);
+      const data = await res.json();
+
+      const user = data.users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        showSuccess("Login berhasil!");
+        localStorage.setItem("loggedUser", JSON.stringify(user));
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 1500);
+      } else {
+        showError("Username atau password salah.");
+      }
+    } catch (err) {
+      showError("Gagal mengakses database.");
+    }
+  }
+
+  function showError(msg) {
+    const box = document.getElementById("errorBox");
+    box.innerText = msg;
+    box.style.display = "block";
+    setTimeout(() => box.style.display = "none", 3000);
+  }
+
+  function showSuccess(msg) {
+    const box = document.getElementById("successBox");
+    box.innerText = msg;
+    box.style.display = "block";
+    setTimeout(() => box.style.display = "none", 3000);
+  }
+</script>
+
+</body>
+</html>
